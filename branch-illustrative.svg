@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Illustrative branch location graphic. Not a map, not to scale, no coordinates,
+     no map pin, no photograph. Required labelling is baked into the artwork so it
+     survives being cropped or re-exported. Handover N-7 / trap 2. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 240" width="520" height="240" role="img" aria-labelledby="bgTitle bgDesc">
+        <title id="bgTitle">Illustrative branch location graphic</title>
+        <desc id="bgDesc">A stylised diagram of a branch on a main road. Not a map and not to scale.</desc>
+        <rect width="520" height="240" fill="#F7F8F7"/>
+        <g stroke="#DCE2DF" stroke-width="1">
+          <path d="M0 40h520M0 80h520M0 120h520M0 160h520M0 200h520"/>
+          <path d="M40 0v240M120 0v240M200 0v240M280 0v240M360 0v240M440 0v240"/>
+        </g>
+        <rect x="0" y="104" width="520" height="34" fill="#E6EAE8"/>
+        <path d="M0 121h520" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="16 12"/>
+        <text x="14" y="98" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5F6F69">King Fahd Road</text>
+        <rect x="196" y="36" width="128" height="62" rx="2" fill="#103B32"/>
+        <rect x="210" y="52" width="24" height="18" fill="#F5C518"/>
+        <rect x="244" y="52" width="24" height="18" fill="#2B5A4E"/>
+        <rect x="278" y="52" width="24" height="18" fill="#2B5A4E"/>
+        <text x="210" y="88" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#FFFFFF">Branch</text>
+        <path d="M260 98v6" stroke="#103B32" stroke-width="2"/>
+        <circle cx="260" cy="110" r="5" fill="#103B32"/>
+        <rect x="60" y="150" width="86" height="44" rx="2" fill="#E6EAE8"/>
+        <rect x="380" y="150" width="86" height="44" rx="2" fill="#E6EAE8"/>
+        <rect x="60" y="22" width="86" height="40" rx="2" fill="#E6EAE8"/>
+        <rect x="378" y="22" width="88" height="40" rx="2" fill="#E6EAE8"/>
+        <g transform="translate(14,206)">
+          <rect x="0" y="0" width="186" height="22" rx="2" fill="#F5C518"/>
+          <text x="9" y="15" font-family="IBM Plex Sans, sans-serif" font-size="10.5" font-weight="600" fill="#231D00">ILLUSTRATIVE — NOT A MAP</text>
+        </g>
+      </svg>
