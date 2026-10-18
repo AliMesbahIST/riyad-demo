@@ -184,6 +184,7 @@ footer strong{color:var(--ink)}
 
 /* widget dock */
 #sprinklr-widget-root{
+  display:none; /* real Sprinklr widget renders instead */
   position:fixed; inset-block-end:1.3rem; inset-inline-end:1.3rem; z-index:110;
 }
 .launcher{
@@ -596,8 +597,17 @@ footer strong{color:var(--ink)}
   /* The only contract with the widget. Nothing is written to storage — N-2. */
   window.RIYAD_DEMO = {
     openChat: function (vars) {
-      /* >>> Sprinklr snippet call goes here, e.g.
-             window.SprinklrLiveChat.open({ customFields: vars });                      */
+      /* Hand the selected profile to Sprinklr, then open the widget.
+         Nothing is written to storage. */
+      if (window.sprChat) {
+        try {
+          window.sprChat("updateUserSettings", { customProperties: vars });
+        } catch (e) { /* widget may not accept custom properties; open anyway */ }
+        try {
+          window.sprChat("openWidget");
+          return;
+        } catch (e) { /* fall through to the diagnostic below */ }
+      }
       var t = STR[state.lang], out = $("#varsOut");
       out.hidden = false;
       out.textContent = t.notWired + "\n\n" +
@@ -634,6 +644,21 @@ footer strong{color:var(--ink)}
 
   applyLang("en");
 })();
+</script>
+
+<!-- ==================================================================== -->
+<!-- Sprinklr Live Chat widget. appId 659dc926f0331c75971586f1_app_1111002107 -->
+<!-- The bot must be deployed to this same Live Chat account, or the       -->
+<!-- widget opens a different bot.                                         -->
+<!-- ==================================================================== -->
+<script>
+window.sprChatSettings = {"appId":"659dc926f0331c75971586f1_app_1111002107","skin":"MODERN"};
+!function(){var a,r,n,o,i,s=window,e=s.sprChat;e&&e.loaded||(a=document,(r=function(){r.q.push(arguments)}).q=[],
+s.sprChat=r,s.sprChat.loaded=!0,n=0,o="spr-live-chat-widget",i=function(){var e=a.getElementById(o),e=(e&&e.parentNode.removeChild(e),a.createElement("script")),
+t=(e.type="text/javascript",e.async=!0,e.src="https://prod15-live-chat.sprinklr.com/api/livechat/handshake/widget/"+s.sprChatSettings.appId,e.id=o,
+e.onerror=function(e){var t,a;++n<=3?setTimeout(i,250):(s.sprChat.loaded=!1,t="WIDGET_LOAD_FAILED",a=e,
+r.q.map(function(e){if("subscribeToUpdate"===e[0]&&e[1]&&"loadCompleted"===e[1].topic)return e[1].subscriber}).map(function(e){e&&e({response:{error:!0,errorPayload:{type:t,message:a}}})}))},
+a.getElementsByTagName("script")[0]);t.parentNode.insertBefore(e,t)},"loading"!==a.readyState?i():a.addEventListener("DOMContentLoaded",i))}();
 </script>
 </body>
 </html>
