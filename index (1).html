@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Demonstration — Corporate &amp; MSME conversational assistant</title>
+<meta name="description" content="Demonstration environment for a conversational assistant. Sample data only. Not a Riyad Bank website.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#15231F; --deep:#103B32; --paper:#F7F8F7; --card:#FFFFFF;
+  --muted:#5F6F69; --line:#DCE2DF; --signal:#F5C518; --signal-ink:#231D00;
+  --rail:44px; --edge:26px;
+  --serif:"Spectral",Georgia,"Times New Roman",serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --arabic:"IBM Plex Sans Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --measure:64ch;
+}
+html[dir="rtl"]{ --serif:var(--arabic); --sans:var(--arabic); }
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--sans); font-size:17px; line-height:1.6;
+  padding-top:var(--rail); padding-inline-start:var(--edge);
+}
+h1,h2,h3{font-family:var(--serif); font-weight:500; line-height:1.15; margin:0}
+h1{font-size:clamp(2.1rem,5.2vw,3.5rem); letter-spacing:-.015em}
+h2{font-size:clamp(1.45rem,3vw,2rem); letter-spacing:-.01em}
+h3{font-size:1.1rem; font-family:var(--sans); font-weight:600; letter-spacing:0}
+p{margin:0 0 1rem; max-width:var(--measure)}
+a{color:var(--deep)}
+:focus-visible{outline:3px solid var(--deep); outline-offset:3px; border-radius:2px}
+
+/* ---------- demonstration signal: fixed top rail + fixed edge marker ---------- */
+.rail{
+  position:fixed; inset-block-start:0; inset-inline:0; height:var(--rail); z-index:120;
+  background:var(--signal); color:var(--signal-ink);
+  display:flex; align-items:center; gap:.9rem;
+  padding-inline:calc(var(--edge) + 1rem);
+  font-size:.82rem; font-weight:600; letter-spacing:.01em;
+  border-block-end:1px solid rgba(0,0,0,.35);
+}
+.rail b{font-weight:600; white-space:nowrap}
+.rail span{font-weight:400; opacity:.85}
+.edge{
+  position:fixed; inset-block:0; inset-inline-start:0; width:var(--edge); z-index:121;
+  background:repeating-linear-gradient(135deg,var(--signal) 0 11px,#1b1b1b 11px 22px);
+}
+.edge .edgetext{
+  position:absolute; top:0; bottom:0; left:0; right:0;
+  display:flex; align-items:center; justify-content:center; overflow:hidden;
+}
+.edge .edgetext i{
+  writing-mode:vertical-rl; transform:rotate(180deg); font-style:normal;
+  font:600 10px/1 var(--sans); letter-spacing:.44em; color:var(--signal-ink);
+  background:var(--signal); padding:1.6rem 0; white-space:nowrap;
+  max-height:80vh; overflow:hidden; direction:ltr;
+}
+
+/* ---------- header ---------- */
+.masthead{
+  position:sticky; inset-block-start:var(--rail); z-index:100;
+  background:rgba(247,248,247,.94); backdrop-filter:blur(8px);
+  border-block-end:1px solid var(--line);
+}
+.masthead .in{
+  max-width:1120px; margin-inline:auto; padding:.8rem 1.4rem;
+  display:flex; align-items:center; gap:1.4rem;
+}
+.mark{display:flex; align-items:center; gap:.65rem; font-weight:600; font-size:.95rem}
+.mark .glyph{
+  inline-size:30px; block-size:30px; flex:none; border-radius:3px;
+  background:var(--deep); position:relative;
+}
+.mark .glyph::before,.mark .glyph::after{
+  content:""; position:absolute; background:var(--signal);
+}
+.mark .glyph::before{inset-block-start:8px; inset-inline-start:7px; inline-size:16px; block-size:2px}
+.mark .glyph::after{inset-block-start:14px; inset-inline-start:7px; inline-size:9px; block-size:2px}
+.mark small{display:block; font-weight:400; font-size:.72rem; color:var(--muted); letter-spacing:.01em}
+nav{margin-inline-start:auto; display:flex; gap:1.3rem; align-items:center; flex-wrap:wrap}
+nav a{font-size:.9rem; text-decoration:none; color:var(--ink); padding-block:.2rem; border-block-end:2px solid transparent}
+nav a:hover{border-block-end-color:var(--deep)}
+.langbtn{
+  font:600 .82rem var(--sans); background:var(--card); color:var(--ink);
+  border:1px solid var(--line); border-radius:999px; padding:.35rem .85rem; cursor:pointer;
+}
+.langbtn:hover{border-color:var(--deep)}
+
+/* ---------- layout ---------- */
+main{max-width:1120px; margin-inline:auto; padding:0 1.4rem 4rem}
+section{padding-block:3.4rem; border-block-start:1px solid var(--line)}
+section:first-of-type{border-block-start:0}
+.lede{font-size:1.12rem; color:var(--muted); max-width:58ch}
+.eyebrow{font-size:.86rem; color:var(--muted); margin:0 0 .5rem}
+
+/* hero */
+.hero{display:grid; grid-template-columns:1.05fr .95fr; gap:3rem; align-items:start; padding-block:3.6rem 3.4rem}
+.hero h1{margin-bottom:1.1rem}
+
+/* profile selector */
+.selector{
+  background:var(--card); border:1px solid var(--line); border-start-start-radius:4px;
+  border-start-end-radius:4px; border-end-end-radius:4px; border-end-start-radius:4px;
+  padding:1.5rem; box-shadow:0 1px 0 var(--line);
+}
+.selector h2{font-size:1.15rem; font-family:var(--sans); font-weight:600; margin-bottom:.3rem}
+.selector .hint{font-size:.88rem; color:var(--muted); margin-bottom:1.1rem}
+.opt{
+  display:flex; gap:.85rem; align-items:flex-start; inline-size:100%; text-align:start;
+  background:var(--paper); border:1px solid var(--line); border-radius:3px;
+  padding:.9rem 1rem; margin-block-end:.6rem; cursor:pointer; font:inherit; color:inherit;
+}
+.opt:hover{border-color:var(--deep); background:#fff}
+.opt[aria-pressed="true"]{border-color:var(--deep); background:#fff; box-shadow:inset 3px 0 0 var(--deep)}
+html[dir="rtl"] .opt[aria-pressed="true"]{box-shadow:inset -3px 0 0 var(--deep)}
+.opt .t{font-weight:600; font-size:.96rem; display:block}
+.opt .d{font-size:.84rem; color:var(--muted); display:block; margin-block-start:.15rem}
+.opt .pin{
+  flex:none; inline-size:34px; block-size:34px; border-radius:50%; background:var(--deep); color:#fff;
+  display:grid; place-items:center; font-size:.8rem; font-weight:600;
+}
+.opt .pin.guest{background:var(--muted)}
+.intake{margin-block-start:1rem; padding-block-start:1rem; border-block-start:1px solid var(--line)}
+.intake[hidden]{display:none}
+.intake p{font-size:.9rem; font-weight:600; margin:0 0 .55rem}
+.chips{display:flex; flex-wrap:wrap; gap:.45rem; margin-block-end:1rem}
+.chip{
+  font:500 .86rem var(--sans); background:var(--paper); border:1px solid var(--line);
+  border-radius:999px; padding:.4rem .85rem; cursor:pointer; color:inherit;
+}
+.chip:hover{border-color:var(--deep)}
+.chip[aria-pressed="true"]{background:var(--deep); border-color:var(--deep); color:#fff}
+.start{
+  inline-size:100%; font:600 .95rem var(--sans); background:var(--deep); color:#fff;
+  border:0; border-radius:3px; padding:.8rem 1rem; cursor:pointer; margin-block-start:.4rem;
+}
+.start:disabled{background:#9DAAA5; cursor:not-allowed}
+.vars{
+  margin-block-start:.9rem; font:400 .78rem/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--muted); background:var(--paper); border:1px dashed var(--line);
+  border-radius:3px; padding:.7rem .8rem; white-space:pre-wrap; overflow-wrap:anywhere;
+}
+.vars[hidden]{display:none}
+
+/* content blocks */
+.cols{display:grid; grid-template-columns:repeat(3,1fr); gap:0}
+.cols > div{padding-inline:1.6rem; border-inline-start:1px solid var(--line)}
+.cols > div:first-child{padding-inline-start:0; border-inline-start:0}
+.cols h3{margin-bottom:.45rem}
+.cols p{font-size:.94rem; color:var(--muted); margin-bottom:0}
+
+table{inline-size:100%; border-collapse:collapse; font-size:.92rem; margin-block-start:1.4rem}
+caption{text-align:start; font-size:.86rem; color:var(--muted); padding-block-end:.7rem}
+th,td{text-align:start; padding:.7rem .8rem; border-block-end:1px solid var(--line); vertical-align:top}
+th{font-weight:600; font-size:.82rem; color:var(--muted); border-block-end:1px solid var(--ink)}
+tbody tr:hover{background:#fff}
+
+.fact{
+  display:grid; grid-template-columns:auto 1fr; gap:.4rem 1.6rem; align-items:baseline;
+  margin-block-start:1.4rem; padding-block:1.2rem; border-block:1px solid var(--line);
+}
+.fact dt{font-size:.86rem; color:var(--muted)}
+.fact dd{margin:0; font-weight:500}
+.caveat{font-size:.84rem; color:var(--muted); margin-block-start:.9rem; padding-inline-start:.8rem; border-inline-start:2px solid var(--signal)}
+
+.numbers{list-style:none; margin:1.2rem 0 0; padding:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.8rem 2rem; max-width:var(--measure)}
+.numbers li{display:flex; justify-content:space-between; gap:1rem; border-block-end:1px solid var(--line); padding-block-end:.5rem; font-size:.94rem}
+.numbers b{font-weight:600; font-variant-numeric:tabular-nums; direction:ltr}
+
+/* branch graphic */
+.branchfig{margin:1.6rem 0 0}
+.branchfig svg{inline-size:100%; max-inline-size:520px; block-size:auto; border:1px solid var(--line); border-radius:3px; background:#fff}
+.branchfig figcaption{font-size:.84rem; color:var(--muted); margin-block-start:.5rem}
+
+footer{border-block-start:1px solid var(--line); background:#fff}
+footer .in{max-width:1120px; margin-inline:auto; padding:2.4rem 1.4rem 3rem}
+footer p{font-size:.88rem; color:var(--muted); max-width:72ch}
+footer strong{color:var(--ink)}
+
+/* widget dock */
+#sprinklr-widget-root{
+  display:none; /* real Sprinklr widget renders instead */
+  position:fixed; inset-block-end:1.3rem; inset-inline-end:1.3rem; z-index:110;
+}
+.launcher{
+  display:flex; align-items:center; gap:.6rem; background:var(--deep); color:#fff;
+  border:0; border-radius:999px; padding:.85rem 1.3rem; cursor:pointer;
+  font:600 .93rem var(--sans); box-shadow:0 6px 22px rgba(16,59,50,.28);
+}
+.launcher .dot{inline-size:8px; block-size:8px; border-radius:50%; background:var(--signal); flex:none}
+.launcher small{display:block; font-weight:400; font-size:.72rem; opacity:.8}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr; gap:2.2rem}
+  .cols{grid-template-columns:1fr; gap:1.6rem}
+  .cols > div{padding-inline:0; border-inline-start:0; border-block-start:1px solid var(--line); padding-block-start:1.2rem}
+  .cols > div:first-child{border-block-start:0; padding-block-start:0}
+}
+@media (max-width:620px){
+  :root{--edge:16px; --rail:58px}
+  body{font-size:16px}
+  .rail{align-items:center; padding-block:.4rem; font-size:.74rem; line-height:1.25; flex-wrap:wrap; gap:.2rem .7rem}
+  .numbers{grid-template-columns:1fr}
+  main{padding-inline:1rem}
+  .masthead .in{padding-inline:1rem; gap:.55rem .8rem; flex-wrap:wrap}
+  .mark{inline-size:100%; font-size:.86rem; gap:.5rem}
+  .mark .glyph{inline-size:24px; block-size:24px}
+  .mark .glyph::before{inset-block-start:7px; inset-inline-start:5px; inline-size:13px}
+  .mark .glyph::after{inset-block-start:12px; inset-inline-start:5px; inline-size:7px}
+  .mark small{display:none}
+  nav{margin-inline-start:0; inline-size:100%; gap:.5rem .95rem; justify-content:space-between}
+  nav a{font-size:.8rem}
+  .langbtn{padding:.28rem .7rem; font-size:.78rem}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+@media print{.edge{display:none} .rail{position:static}}
+/* the mobile rule below intentionally keeps the edge label: it is the screenshot-survival control */
+</style>
+</head>
+<body>
+
+<!-- Demonstration signal. N-1. Not dismissible, not scrollable away, present in any crop. -->
+<div class="rail" role="note">
+  <b data-i18n="rail1">Demonstration environment</b>
+  <span data-i18n="rail2">Sample data only. Not a Riyad Bank website and not connected to any Riyad Bank system.</span>
+</div>
+<div class="edge" aria-hidden="true"><span class="edgetext"><i>SAMPLE DATA · DEMONSTRATION · SAMPLE DATA · DEMONSTRATION · SAMPLE DATA</i></span></div>
+
+<header class="masthead">
+  <div class="in">
+    <div class="mark">
+      <span class="glyph" aria-hidden="true"></span>
+      <span data-i18n="markTitle">Corporate &amp; MSME Banking
+        <small data-i18n="markSub">Assistant demonstration</small>
+      </span>
+    </div>
+    <nav>
+      <a href="#accounts" data-i18n="navAccounts">Business accounts</a>
+      <a href="#branches" data-i18n="navBranches">Branches</a>
+      <a href="#cards" data-i18n="navCards">Cards</a>
+      <a href="#contact" data-i18n="navContact">Contact</a>
+      <button class="langbtn" id="langToggle" type="button">العربية</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div>
+      <p class="eyebrow" data-i18n="heroEyebrow">Conversational assistant, demonstration build v2</p>
+      <h1 data-i18n="heroH1">Banking questions answered in the channel your customers already use.</h1>
+      <p class="lede" data-i18n="heroLede">This page exists to host the assistant. Choose a profile to begin — the assistant greets a signed-in company by name, and handles a prospect without asking for any personal details.</p>
+      <p class="lede" data-i18n="heroLede2">Every figure shown on this page and in the conversation is sample data assembled for the demonstration.</p>
+    </div>
+
+    <!-- ============ PRE-CHAT PROFILE SELECTOR (stores nothing — N-2) ============ -->
+    <div class="selector" id="prechat">
+      <h2 data-i18n="selH2">Choose a profile</h2>
+      <p class="hint" data-i18n="selHint">Sample profiles for the demonstration. Nothing you select is stored.</p>
+
+      <button class="opt" type="button" data-profile="A" aria-pressed="false">
+        <span class="pin" aria-hidden="true">NI</span>
+        <span>
+          <span class="t" data-i18n="optAT">Najd Industrial Co.</span>
+          <span class="d" data-i18n="optAD">Signed in · Small business · all journeys available</span>
+        </span>
+      </button>
+
+      <button class="opt" type="button" data-profile="GUEST" aria-pressed="false">
+        <span class="pin guest" aria-hidden="true">?</span>
+        <span>
+          <span class="t" data-i18n="optGT">Continue as a guest</span>
+          <span class="d" data-i18n="optGD">Not signed in · account opening, branches and cards</span>
+        </span>
+      </button>
+
+      <!-- guest intake: two questions about the business, no personal data (Ruling 01 §H) -->
+      <div class="intake" id="intake" hidden>
+        <p data-i18n="q1">What does your business need today?</p>
+        <div class="chips" data-group="need">
+          <button class="chip" type="button" data-val="open" aria-pressed="false" data-i18n="q1a">Open an account</button>
+          <button class="chip" type="button" data-val="info" aria-pressed="false" data-i18n="q1b">Branch or product information</button>
+          <button class="chip" type="button" data-val="other" aria-pressed="false" data-i18n="q1c">Something else</button>
+        </div>
+        <div id="q2wrap" hidden>
+          <p data-i18n="q2">What type of entity?</p>
+          <div class="chips" data-group="entity">
+            <button class="chip" type="button" data-val="sole" aria-pressed="false" data-i18n="q2a">Sole Establishment</button>
+            <button class="chip" type="button" data-val="llc" aria-pressed="false" data-i18n="q2b">LLC</button>
+            <button class="chip" type="button" data-val="other" aria-pressed="false" data-i18n="q2c">Other</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="start" id="startChat" type="button" disabled data-i18n="startBtn">Select a profile to start</button>
+      <div class="vars" id="varsOut" hidden></div>
+    </div>
+  </section>
+
+  <section id="accounts">
+    <h2 data-i18n="accH2">Opening a business account</h2>
+    <p class="lede" data-i18n="accLede">Three channels. The authorised signature is validated at a branch even when the application starts online.</p>
+    <div class="cols">
+      <div>
+        <h3 data-i18n="ch1T">Online application</h3>
+        <p data-i18n="ch1D">Identity validated through the Nafath app. Suited to micro and small businesses.</p>
+      </div>
+      <div>
+        <h3 data-i18n="ch2T">Branch visit</h3>
+        <p data-i18n="ch2D">Validates the authorised signature and completes the file. An appointment is recommended.</p>
+      </div>
+      <div>
+        <h3 data-i18n="ch3T">Relationship Manager</h3>
+        <p data-i18n="ch3D">Suited to medium-sized businesses and to anything above the MSME bands.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="branches">
+    <h2 data-i18n="brH2">Branches</h2>
+    <p class="lede" data-i18n="brLede">Published hours across branches are Sunday to Thursday, 09:30–16:30. Friday and Saturday closed.</p>
+    <table>
+      <caption data-i18n="brCap">Sample set used in the demonstration. Public figures retrieved 17 October 2026 and requiring verification before customer-facing use.</caption>
+      <thead><tr>
+        <th data-i18n="thBranch">Branch</th><th data-i18n="thCity">City</th>
+        <th data-i18n="thHours">Sun–Thu</th><th data-i18n="thNote">Note</th>
+      </tr></thead>
+      <tbody>
+        <tr><td data-i18n="b1">Al-Aqiq (King Fahd Road)</td><td data-i18n="cRiyadh">Riyadh</td><td>09:30–16:30</td><td data-i18n="b1n">Business banking desk</td></tr>
+        <tr><td data-i18n="b2">KAFD Head Office</td><td data-i18n="cRiyadh2">Riyadh</td><td>09:30–16:30</td><td data-i18n="b2n">Corporate and Trade Finance</td></tr>
+        <tr><td data-i18n="b3">As Sulimaniyah</td><td data-i18n="cRiyadh3">Riyadh</td><td>09:30–16:30</td><td>—</td></tr>
+        <tr><td data-i18n="b4">Al Masiaf</td><td data-i18n="cRiyadh4">Riyadh</td><td>09:30–16:30</td><td>—</td></tr>
+        <tr><td data-i18n="b5">Al Malaz</td><td data-i18n="cRiyadh5">Riyadh</td><td>09:30–16:30</td><td>—</td></tr>
+        <tr><td data-i18n="b6">An Nuzhah</td><td data-i18n="cRiyadh6">Riyadh</td><td>09:30–16:30</td><td>—</td></tr>
+        <tr><td data-i18n="b7">Sari</td><td data-i18n="cJeddah">Jeddah</td><td>09:30–16:30</td><td data-i18n="b7n">Branch code 170</td></tr>
+        <tr><td data-i18n="b8">Al-Khobar</td><td data-i18n="cKhobar">Al-Khobar</td><td>09:30–16:30</td><td data-i18n="b8n">Branch code 301</td></tr>
+      </tbody>
+    </table>
+
+    <figure class="branchfig">
+      <!-- Illustrative only. No coordinates, no map pin, no photograph. -->
+      <svg viewBox="0 0 520 240" role="img" aria-labelledby="bgTitle bgDesc">
+        <title id="bgTitle">Illustrative branch location graphic</title>
+        <desc id="bgDesc">A stylised diagram of a branch on a main road. Not a map and not to scale.</desc>
+        <rect width="520" height="240" fill="#F7F8F7"/>
+        <g stroke="#DCE2DF" stroke-width="1">
+          <path d="M0 40h520M0 80h520M0 120h520M0 160h520M0 200h520"/>
+          <path d="M40 0v240M120 0v240M200 0v240M280 0v240M360 0v240M440 0v240"/>
+        </g>
+        <rect x="0" y="104" width="520" height="34" fill="#E6EAE8"/>
+        <path d="M0 121h520" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="16 12"/>
+        <text x="14" y="98" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5F6F69">King Fahd Road</text>
+        <rect x="196" y="36" width="128" height="62" rx="2" fill="#103B32"/>
+        <rect x="210" y="52" width="24" height="18" fill="#F5C518"/>
+        <rect x="244" y="52" width="24" height="18" fill="#2B5A4E"/>
+        <rect x="278" y="52" width="24" height="18" fill="#2B5A4E"/>
+        <text x="210" y="88" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#FFFFFF">Branch</text>
+        <path d="M260 98v6" stroke="#103B32" stroke-width="2"/>
+        <circle cx="260" cy="110" r="5" fill="#103B32"/>
+        <rect x="60" y="150" width="86" height="44" rx="2" fill="#E6EAE8"/>
+        <rect x="380" y="150" width="86" height="44" rx="2" fill="#E6EAE8"/>
+        <rect x="60" y="22" width="86" height="40" rx="2" fill="#E6EAE8"/>
+        <rect x="378" y="22" width="88" height="40" rx="2" fill="#E6EAE8"/>
+        <g transform="translate(14,206)">
+          <rect x="0" y="0" width="186" height="22" rx="2" fill="#F5C518"/>
+          <text x="9" y="15" font-family="IBM Plex Sans, sans-serif" font-size="10.5" font-weight="600" fill="#231D00">ILLUSTRATIVE — NOT A MAP</text>
+        </g>
+      </svg>
+      <figcaption data-i18n="figCap">Illustrative graphic. Not a map, not to scale, and not a navigational reference. Branch coordinates and photography have not been supplied.</figcaption>
+    </figure>
+  </section>
+
+  <section id="cards">
+    <h2 data-i18n="cdH2">Business Banking Credit Card</h2>
+    <p class="lede" data-i18n="cdLede">The card offered to MSME and corporate customers. Applications are made through the Relationship Manager, and the company must hold an account first.</p>
+    <dl class="fact">
+      <dt data-i18n="f1t">Annual fee</dt><dd data-i18n="f1d">SAR 200 primary. Additional cards free. No annual fee in the first year</dd>
+      <dt data-i18n="f2t">Controls</dt><dd data-i18n="f2d">SMS alert on every primary and additional card transaction, employee spend control</dd>
+      <dt data-i18n="f3t">Included</dt><dd data-i18n="f3d">Automatic Hassad Rewards enrolment, Shariah compliant, 3D Secure</dd>
+    </dl>
+    <p class="caveat" data-i18n="cdCav">Terms and conditions apply. Figures were taken from published pages on 17 October 2026 and require verification at source before customer-facing use. No campaign or promotional offer is shown here, because no approved campaign content has been supplied.</p>
+  </section>
+
+  <section id="contact">
+    <h2 data-i18n="coH2">Contact</h2>
+    <ul class="numbers">
+      <li><span data-i18n="n1">Customer service, 24/7</span><b>920002470</b></li>
+      <li><span data-i18n="n2">Riyad Line, complaints</span><b>8001242225</b></li>
+      <li><span data-i18n="n3">SME enquiries</span><b>8001242020</b></li>
+      <li><span data-i18n="n4">SME card activation</span><b>8001222444</b></li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <div class="in">
+    <p><strong data-i18n="ftS">This is a demonstration.</strong> <span data-i18n="ftP1">It is hosted on a non-Riyad Bank domain, is not operated by Riyad Bank, and is not connected to any Riyad Bank system. No real customer, account, payment, application or letter of credit appears anywhere in it, and nothing done here has any real-world effect.</span></p>
+    <p data-i18n="ftP2">Product, fee and branch figures are public values retrieved on 17 October 2026 and require verification at source before any customer-facing use. Records, balances and references are fabricated for the demonstration. No accuracy, latency or completion figure is quoted, because none has been measured.</p>
+  </div>
+</footer>
+
+<!-- ==================================================================== -->
+<!-- SPRINKLR WIDGET EMBED POINT                                          -->
+<!--                                                                      -->
+<!-- Replace the <button> below with the Sprinklr Live Chat snippet.      -->
+<!-- Keep the wrapper div and its id: the selector calls                  -->
+<!-- window.RIYAD_DEMO.openChat(profile) and that is the only contract.   -->
+<!--                                                                      -->
+<!-- The snippet must receive these six variables. See                    -->
+<!-- docs/PRECHAT.md for the injection path and the fallback.             -->
+<!--   profile_mode, customer_name, company_name, cif, segment, otp       -->
+<!--                                                                      -->
+<!-- Do NOT render a fake conversation here. If the widget is not yet     -->
+<!-- wired, leave the placeholder visibly inert.                          -->
+<!-- ==================================================================== -->
+<div id="sprinklr-widget-root">
+  <button class="launcher" id="launcher" type="button">
+    <span class="dot" aria-hidden="true"></span>
+    <span data-i18n="launch">Chat with the assistant
+      <small data-i18n="launchSub">Widget embed point</small>
+    </span>
+  </button>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* Profile definitions. Mirrors data/DATA_PACK_v2.md section 5.
+     Profile B is deliberately absent — QA Ruling 02, item 19. */
+  var PROFILES = {
+    A: { profile_mode:"LOGGED_IN", customer_name:"Faisal Al-Harbi", company_name:"Najd Industrial Co.",
+         cif:"12345678", segment:"Small", otp:"123456" },
+    GUEST: { profile_mode:"GUEST", customer_name:"", company_name:"", cif:"", segment:"Prospect", otp:"" }
+  };
+
+  var STR = {
+    en: {
+      rail1:"Demonstration environment",
+      rail2:"Sample data only. Not a Riyad Bank website and not connected to any Riyad Bank system.",
+      markTitle:"Corporate &amp; MSME Banking", markSub:"Assistant demonstration",
+      navAccounts:"Business accounts", navBranches:"Branches", navCards:"Cards", navContact:"Contact",
+      heroEyebrow:"Conversational assistant, demonstration build v2",
+      heroH1:"Banking questions answered in the channel your customers already use.",
+      heroLede:"This page exists to host the assistant. Choose a profile to begin — the assistant greets a signed-in company by name, and handles a prospect without asking for any personal details.",
+      heroLede2:"Every figure shown on this page and in the conversation is sample data assembled for the demonstration.",
+      selH2:"Choose a profile", selHint:"Sample profiles for the demonstration. Nothing you select is stored.",
+      optAT:"Najd Industrial Co.", optAD:"Signed in · Small business · all journeys available",
+      optGT:"Continue as a guest", optGD:"Not signed in · account opening, branches and cards",
+      q1:"What does your business need today?", q1a:"Open an account", q1b:"Branch or product information", q1c:"Something else",
+      q2:"What type of entity?", q2a:"Sole Establishment", q2b:"LLC", q2c:"Other",
+      startBtn:"Select a profile to start", startReady:"Start the conversation",
+      accH2:"Opening a business account",
+      accLede:"Three channels. The authorised signature is validated at a branch even when the application starts online.",
+      ch1T:"Online application", ch1D:"Identity validated through the Nafath app. Suited to micro and small businesses.",
+      ch2T:"Branch visit", ch2D:"Validates the authorised signature and completes the file. An appointment is recommended.",
+      ch3T:"Relationship Manager", ch3D:"Suited to medium-sized businesses and to anything above the MSME bands.",
+      brH2:"Branches", brLede:"Published hours across branches are Sunday to Thursday, 09:30–16:30. Friday and Saturday closed.",
+      brCap:"Sample set used in the demonstration. Public figures retrieved 17 October 2026 and requiring verification before customer-facing use.",
+      thBranch:"Branch", thCity:"City", thHours:"Sun–Thu", thNote:"Note",
+      b1:"Al-Aqiq (King Fahd Road)", b1n:"Business banking desk", b2:"KAFD Head Office", b2n:"Corporate and Trade Finance",
+      b3:"As Sulimaniyah", b4:"Al Masiaf", b5:"Al Malaz", b6:"An Nuzhah", b7:"Sari", b7n:"Branch code 170",
+      b8:"Al-Khobar", b8n:"Branch code 301",
+      cRiyadh:"Riyadh", cRiyadh2:"Riyadh", cRiyadh3:"Riyadh", cRiyadh4:"Riyadh", cRiyadh5:"Riyadh", cRiyadh6:"Riyadh",
+      cJeddah:"Jeddah", cKhobar:"Al-Khobar",
+      figCap:"Illustrative graphic. Not a map, not to scale, and not a navigational reference. Branch coordinates and photography have not been supplied.",
+      cdH2:"Business Banking Credit Card",
+      cdLede:"The card offered to MSME and corporate customers. Applications are made through the Relationship Manager, and the company must hold an account first.",
+      f1t:"Annual fee", f1d:"SAR 200 primary. Additional cards free. No annual fee in the first year",
+      f2t:"Controls", f2d:"SMS alert on every primary and additional card transaction, employee spend control",
+      f3t:"Included", f3d:"Automatic Hassad Rewards enrolment, Shariah compliant, 3D Secure",
+      cdCav:"Terms and conditions apply. Figures were taken from published pages on 17 October 2026 and require verification at source before customer-facing use. No campaign or promotional offer is shown here, because no approved campaign content has been supplied.",
+      coH2:"Contact", n1:"Customer service, 24/7", n2:"Riyad Line, complaints", n3:"SME enquiries", n4:"SME card activation",
+      ftS:"This is a demonstration.",
+      ftP1:"It is hosted on a non-Riyad Bank domain, is not operated by Riyad Bank, and is not connected to any Riyad Bank system. No real customer, account, payment, application or letter of credit appears anywhere in it, and nothing done here has any real-world effect.",
+      ftP2:"Product, fee and branch figures are public values retrieved on 17 October 2026 and require verification at source before any customer-facing use. Records, balances and references are fabricated for the demonstration. No accuracy, latency or completion figure is quoted, because none has been measured.",
+      launch:"Chat with the assistant", launchSub:"Widget embed point",
+      varsLabel:"Variables handed to the widget", notWired:"Widget not wired yet. These are the variables the Sprinklr snippet will receive."
+    },
+    ar: {
+      rail1:"بيئة تجريبية",
+      rail2:"بيانات توضيحية فقط. هذا ليس موقع بنك الرياض وغير متصل بأي نظام من أنظمته.",
+      markTitle:"الخدمات المصرفية للشركات والمنشآت", markSub:"عرض توضيحي للمساعد",
+      navAccounts:"الحسابات التجارية", navBranches:"الفروع", navCards:"البطاقات", navContact:"التواصل",
+      heroEyebrow:"المساعد المحادثي — النسخة التجريبية الثانية",
+      heroH1:"إجابات مصرفية في القناة التي يستخدمها عملاؤك أصلًا.",
+      heroLede:"هذه الصفحة موجودة لاستضافة المساعد. اختر ملفًا للبدء — يرحّب المساعد بالشركة المسجّلة باسمها، ويتعامل مع العميل المحتمل دون طلب أي بيانات شخصية.",
+      heroLede2:"كل رقم يظهر في هذه الصفحة أو في المحادثة هو بيانات توضيحية أُعدّت لهذا العرض.",
+      selH2:"اختر ملفًا", selHint:"ملفات توضيحية لهذا العرض. لا يتم تخزين أي شيء تختاره.",
+      optAT:"شركة نجد الصناعية", optAD:"مسجّل الدخول · منشأة صغيرة · جميع الخدمات متاحة",
+      optGT:"المتابعة كزائر", optGD:"غير مسجّل · فتح حساب، الفروع، والبطاقات",
+      q1:"ما الذي تحتاجه منشأتك اليوم؟", q1a:"فتح حساب", q1b:"معلومات عن فرع أو منتج", q1c:"شيء آخر",
+      q2:"ما نوع الكيان؟", q2a:"مؤسسة فردية", q2b:"شركة ذات مسؤولية محدودة", q2c:"أخرى",
+      startBtn:"اختر ملفًا للبدء", startReady:"ابدأ المحادثة",
+      accH2:"فتح حساب تجاري",
+      accLede:"ثلاث قنوات. يتم اعتماد التوقيع المعتمد في الفرع حتى لو بدأ الطلب عبر الإنترنت.",
+      ch1T:"الطلب عبر الإنترنت", ch1D:"التحقق من الهوية عبر تطبيق نفاذ. مناسب للمنشآت متناهية الصغر والصغيرة.",
+      ch2T:"زيارة الفرع", ch2D:"لاعتماد التوقيع واستكمال الملف. يُنصح بحجز موعد.",
+      ch3T:"مدير العلاقة", ch3D:"مناسب للمنشآت المتوسطة ولما يتجاوز شرائح المنشآت الصغيرة والمتوسطة.",
+      brH2:"الفروع", brLede:"ساعات العمل المعلنة في الفروع من الأحد إلى الخميس، 09:30–16:30. الجمعة والسبت مغلق.",
+      brCap:"مجموعة توضيحية مستخدمة في العرض. أرقام عامة مأخوذة في 17 أكتوبر 2026 وتتطلب التحقق قبل أي استخدام مع العملاء.",
+      thBranch:"الفرع", thCity:"المدينة", thHours:"الأحد–الخميس", thNote:"ملاحظة",
+      b1:"العقيق (طريق الملك فهد)", b1n:"قسم الخدمات المصرفية للأعمال", b2:"المركز الرئيسي — كافد", b2n:"الشركات وتمويل التجارة",
+      b3:"السليمانية", b4:"المصيف", b5:"الملز", b6:"النزهة", b7:"الساري", b7n:"رمز الفرع 170",
+      b8:"الخبر", b8n:"رمز الفرع 301",
+      cRiyadh:"الرياض", cRiyadh2:"الرياض", cRiyadh3:"الرياض", cRiyadh4:"الرياض", cRiyadh5:"الرياض", cRiyadh6:"الرياض",
+      cJeddah:"جدة", cKhobar:"الخبر",
+      figCap:"رسم توضيحي. ليس خريطة، وليس بمقياس رسم، وليس مرجعًا للملاحة. لم يتم تزويدنا بإحداثيات الفروع أو صورها.",
+      cdH2:"بطاقة الأعمال الائتمانية",
+      cdLede:"البطاقة المتاحة لعملاء المنشآت والشركات. يتم التقديم عبر مدير العلاقة، ويجب أن يكون لدى الشركة حساب أولًا.",
+      f1t:"الرسوم السنوية", f1d:"200 ريال للبطاقة الأساسية. البطاقات الإضافية مجانية. بدون رسوم في السنة الأولى",
+      f2t:"أدوات التحكم", f2d:"تنبيه برسالة نصية عند كل عملية على البطاقة الأساسية والإضافية، والتحكم في إنفاق الموظفين",
+      f3t:"مشمول", f3d:"تسجيل تلقائي في مكافآت حصاد، متوافقة مع الشريعة، وخدمة 3D Secure",
+      cdCav:"تطبق الشروط والأحكام. الأرقام مأخوذة من صفحات منشورة في 17 أكتوبر 2026 وتتطلب التحقق من المصدر قبل أي استخدام مع العملاء. لا تظهر هنا أي حملة أو عرض ترويجي، لعدم تزويدنا بمحتوى حملات معتمد.",
+      coH2:"التواصل", n1:"خدمة العملاء، على مدار الساعة", n2:"خط الرياض، الشكاوى", n3:"استفسارات المنشآت", n4:"تفعيل بطاقات المنشآت",
+      ftS:"هذا عرض توضيحي.",
+      ftP1:"يُستضاف على نطاق لا يتبع بنك الرياض، ولا يُدار من قبل بنك الرياض، وغير متصل بأي نظام من أنظمته. لا يظهر فيه أي عميل أو حساب أو دفعة أو طلب أو اعتماد مستندي حقيقي، ولا يترتب على أي إجراء هنا أثر فعلي.",
+      ftP2:"أرقام المنتجات والرسوم والفروع قيم عامة مأخوذة في 17 أكتوبر 2026 وتتطلب التحقق من المصدر قبل أي استخدام مع العملاء. السجلات والأرصدة والأرقام المرجعية مُصطنعة لأغراض العرض. لا يُذكر أي رقم عن الدقة أو زمن الاستجابة أو نسبة الإنجاز، لأنه لم يُقَس أي منها.",
+      launch:"تحدث مع المساعد", launchSub:"نقطة تضمين الأداة",
+      varsLabel:"المتغيرات المُمرَّرة إلى الأداة", notWired:"لم يتم ربط الأداة بعد. هذه هي المتغيرات التي ستستقبلها إضافة Sprinklr."
+    }
+  };
+
+  var state = { lang:"en", profile:null, need:null, entity:null };
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  function applyLang(lang) {
+    state.lang = lang;
+    var t = STR[lang];
+    document.documentElement.lang = lang;
+    document.documentElement.dir = (lang === "ar") ? "rtl" : "ltr";
+    document.documentElement.setAttribute("data-lang", lang);
+    $$("[data-i18n]").forEach(function (el) {
+      var k = el.getAttribute("data-i18n");
+      if (!(k in t)) return;
+      var small = el.querySelector("small");
+      if (small) {                         // keep the nested <small> subtitle
+        var sk = small.getAttribute("data-i18n");
+        el.childNodes[0].nodeValue = t[k].replace(/&amp;/g, "&") + " ";
+        if (sk && sk in t) small.textContent = t[sk];
+      } else {
+        el.innerHTML = t[k];
+      }
+    });
+    $("#langToggle").textContent = (lang === "ar") ? "English" : "العربية";
+    document.title = (lang === "ar")
+      ? "عرض توضيحي — المساعد المحادثي للشركات والمنشآت"
+      : "Demonstration — Corporate & MSME conversational assistant";
+    refreshStart();
+  }
+
+  function refreshStart() {
+    var t = STR[state.lang], btn = $("#startChat");
+    var ready = state.profile === "A" || (state.profile === "GUEST" && state.need !== null);
+    btn.disabled = !ready;
+    btn.textContent = ready ? t.startReady : t.startBtn;
+  }
+
+  $$(".opt").forEach(function (b) {
+    b.addEventListener("click", function () {
+      state.profile = b.getAttribute("data-profile");
+      $$(".opt").forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
+      var guest = state.profile === "GUEST";
+      $("#intake").hidden = !guest;
+      if (!guest) { state.need = null; state.entity = null; $("#q2wrap").hidden = true;
+                    $$(".chip").forEach(function (c) { c.setAttribute("aria-pressed", "false"); }); }
+      $("#varsOut").hidden = true;
+      refreshStart();
+    });
+  });
+
+  $$(".chip").forEach(function (c) {
+    c.addEventListener("click", function () {
+      var group = c.parentNode.getAttribute("data-group");
+      $$('[data-group="' + group + '"] .chip').forEach(function (o) {
+        o.setAttribute("aria-pressed", String(o === c));
+      });
+      if (group === "need") {
+        state.need = c.getAttribute("data-val");
+        $("#q2wrap").hidden = state.need !== "open";
+        if (state.need !== "open") state.entity = null;
+      } else {
+        state.entity = c.getAttribute("data-val");
+      }
+      refreshStart();
+    });
+  });
+
+  /* The only contract with the widget. Nothing is written to storage — N-2. */
+  window.RIYAD_DEMO = {
+    openChat: function (vars) {
+      /* Hand the selected profile to Sprinklr, then open the widget.
+         Nothing is written to storage. */
+      if (window.sprChat) {
+        try {
+          window.sprChat("updateUserSettings", { customProperties: vars });
+        } catch (e) { /* widget may not accept custom properties; open anyway */ }
+        try {
+          window.sprChat("openWidget");
+          return;
+        } catch (e) { /* fall through to the diagnostic below */ }
+      }
+      var t = STR[state.lang], out = $("#varsOut");
+      out.hidden = false;
+      out.textContent = t.notWired + "\n\n" +
+        Object.keys(vars).map(function (k) {
+          return k + " = " + (vars[k] === "" ? "(empty)" : vars[k]);
+        }).join("\n");
+      out.setAttribute("tabindex", "-1");
+      out.focus();
+    },
+    getVars: function () {
+      var p = PROFILES[state.profile || "GUEST"];
+      var vars = {
+        profile_mode: p.profile_mode, customer_name: p.customer_name,
+        company_name: p.company_name, cif: p.cif, segment: p.segment, otp: p.otp
+      };
+      if (state.profile === "GUEST") {
+        if (state.need) vars.guest_need = state.need;
+        if (state.entity) vars.guest_entity = state.entity;
+      }
+      return vars;
+    }
+  };
+
+  $("#startChat").addEventListener("click", function () {
+    window.RIYAD_DEMO.openChat(window.RIYAD_DEMO.getVars());
+  });
+  $("#launcher").addEventListener("click", function () {
+    if (!state.profile) { $("#prechat").scrollIntoView({ block:"center" }); $(".opt").focus(); return; }
+    window.RIYAD_DEMO.openChat(window.RIYAD_DEMO.getVars());
+  });
+  $("#langToggle").addEventListener("click", function () {
+    applyLang(state.lang === "ar" ? "en" : "ar");
+  });
+
+  applyLang("en");
+})();
+</script>
+
+<!-- ==================================================================== -->
+<!-- Sprinklr Live Chat widget. appId 659dc926f0331c75971586f1_app_1111002107 -->
+<!-- The bot must be deployed to this same Live Chat account, or the       -->
+<!-- widget opens a different bot.                                         -->
+<!-- ==================================================================== -->
+<script>
+window.sprChatSettings = {"appId":"659dc926f0331c75971586f1_app_1111002107","skin":"MODERN"};
+!function(){var a,r,n,o,i,s=window,e=s.sprChat;e&&e.loaded||(a=document,(r=function(){r.q.push(arguments)}).q=[],
+s.sprChat=r,s.sprChat.loaded=!0,n=0,o="spr-live-chat-widget",i=function(){var e=a.getElementById(o),e=(e&&e.parentNode.removeChild(e),a.createElement("script")),
+t=(e.type="text/javascript",e.async=!0,e.src="https://prod15-live-chat.sprinklr.com/api/livechat/handshake/widget/"+s.sprChatSettings.appId,e.id=o,
+e.onerror=function(e){var t,a;++n<=3?setTimeout(i,250):(s.sprChat.loaded=!1,t="WIDGET_LOAD_FAILED",a=e,
+r.q.map(function(e){if("subscribeToUpdate"===e[0]&&e[1]&&"loadCompleted"===e[1].topic)return e[1].subscriber}).map(function(e){e&&e({response:{error:!0,errorPayload:{type:t,message:a}}})}))},
+a.getElementsByTagName("script")[0]);t.parentNode.insertBefore(e,t)},"loading"!==a.readyState?i():a.addEventListener("DOMContentLoaded",i))}();
+</script>
+</body>
+</html>
